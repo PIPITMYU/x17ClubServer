@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.UtilDao">
+	<!-- 删除俱乐部 -->
+	<delete id="deleteCheckStatus">
+		DELETE from club_check_status
+	</delete>
+	<delete id="deleteRecord">
+		DELETE from club_game_play_record
+	</delete>
+	<delete id="deleteRoom">
+		DELETE from club_game_room
+	</delete>
+	<delete id="deleteInfo">
+		DELETE from club_info
+	</delete>
+	<delete id="deleteUser">
+		DELETE from club_user
+	</delete>
+	<delete id="deleteUse">
+		DELETE from club_user_use
+	</delete>
+	<!-- 删除直充信息 -->
+	<delete id="deleteDaiLUser">
+		DELETE FROM zc_dail_user
+	</delete>
+	<delete id="deleteRecharge">
+		DELETE FROM zc_recharge
+	</delete>
+	<delete id="deleteCash">
+		DELETE FROM zc_cash
+	</delete>
+	<!-- 删除游戏测试信息 -->
+	<delete id="deleteGamePlayRecord">
+		DELETE FROM GAME_PLAY_RECORD
+	</delete>
+	<delete id="deleteGameRoom">
+		DELETE FROM GAME_ROOM
+	</delete>
+	<delete id="deleteGameUser">
+		DELETE FROM GAME_USER where OPEN_ID LIKE '%wsw%'  
+	</delete>
+	<delete id="deleteGameUse">
+		DELETE FROM gm_player_consumerecord
+	</delete>
+	
+</mapper>

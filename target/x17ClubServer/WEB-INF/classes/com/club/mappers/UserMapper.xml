@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.UserDao">
+	<!-- 修改玩家库存 -->
+	<update id="updateUserMoney">
+		update gm_admin_userinfo
+		set money = money - #{change}
+		where id = #{id}
+	</update>
+	<!-- 查找玩家库存 -->
+	<select id="findMoney" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select money from gm_admin_userinfo where id = #{id}
+	</select>
+	<!-- 查找玩家 -->
+	<select id="findUser" parameterType="java.lang.Integer" resultType="com.club.entity.User">
+		select * from GAME_USER where USER_ID=#{userId}
+	</select>
+	<!-- 查找token -->
+	<select id="findUserToken" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select login_token_out_time from gm_admin_userinfo where id=#{id}
+	</select>
+	<!-- 通过代理Id查找GAME_ID -->
+	<select id="findUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select binding_playerId from gm_admin_userinfo where id=#{id}
+	</select>
+	<!-- 查找真实代理id -->
+	<!-- select id from gm_admin_userinfo where  binding_playerId = 136562 ORDER BY grade  desc limit 0,1 -->
+	<select id="findTrueId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select id from gm_admin_userinfo where binding_playerId=#{userId}
+	</select>
+	<!-- 查找邀请码 -->
+	<select id="findDaiLById" parameterType="java.lang.Integer" resultType="com.club.entity.DaiL">
+		select * from zc_dail_info where dail_id = #{dail_id}
+	</select>
+	<!-- 查找代理的姓名，图片，房卡 -->
+	<select id="findDaiLInfo" parameterType="java.lang.Integer" resultType="map">
+		select userName,head,money,binding_playerId from gm_admin_userinfo where id = #{userId}
+	</select>
+	<!-- 查询总代理权限 -->
+	 <select id="findDaiLPower" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+	 	SELECT grade FROM gm_admin_userinfo where id = #{userId}
+	 </select>
+	 <!-- 修改充值玩家库存 -->
+	 <select id="changePayMoney">
+	 	update GAME_USER
+		set money = money + #{change}
+		where USER_ID = #{id}
+	 </select>
+</mapper>

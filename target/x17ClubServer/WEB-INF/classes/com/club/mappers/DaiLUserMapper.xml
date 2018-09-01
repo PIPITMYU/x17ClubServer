@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.DaiLUserDao">
+	<!-- 分页查询绑定用户 -->
+	<select id="findDaiLUserByPages" parameterType="map" resultType="com.club.entity.DaiLUser">
+		SELECT * FROM zc_dail_user where dail_id = #{dail_id} ORDER BY time DESC LIMIT #{start},#{size} 
+	</select>
+	<!-- 查询代理总绑定用户数量 -->
+	<select id="findAllUserCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(id) FROM zc_dail_user where dail_id = #{dail_id}
+	</select>
+	<!-- 查询用户总充值 不含扣量 -->
+	<select id="findUserAllBuy" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT SUM(money) from zc_recharge where ifkou = 0 and user_id = #{userId}
+	</select>
+	<!-- 分页查询直充明细 不含扣量-->
+	<select id="findRechargeByPages" parameterType="map" resultType="com.club.entity.Recharge">
+		SELECT * FROM zc_recharge where ifkou = 0 and dail_id = #{dail_id} ORDER BY time DESC LIMIT #{start},#{size}
+	</select>
+	<!-- 充值总条数 不含扣量 -->
+	<select id="findAllBuyCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(id) FROM zc_recharge where ifkou = 0 and dail_id = #{dail_id}
+	</select>
+	<!-- 查询分成 -->
+	<select id="findScaleById" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT scale FROM zc_dail_info where dail_id = #{userId} 
+	</select>
+	<!-- 今日直充卡数 -->
+	<select id="todayAllCard" parameterType="map" resultType="java.lang.Integer">
+		SELECT SUM(card) FROM zc_recharge where time&gt;=#{morning} and time&lt;#{night}
+		and ifkou = 0 and dail_id = #{dail_id} 
+ 	</select>
+ 	<!-- 查询代理中充值 不含扣量 即可提现的-->
+ 	<select id="daiLAllBuy" parameterType="map" resultType="java.lang.Integer">
+ 		SELECT SUM(money) from zc_recharge where ifkou = 0 and ifcash = 0 and time&lt;#{time} and dail_id = #{dail_id}
+ 	</select>
+ 	<!-- 查找user代理id -->
+ 	<select id="findDaiLId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+ 		SELECT dail_id FROM zc_dail_user WHERE user_id = #{userId}
+ 	</select>
+ 	<!-- 修改用户代理 -->
+ 	<update id="changeDaiLId">
+ 		UPDATE zc_dail_user SET dail_id = #{dail_id} WHERE user_id = #{user_id}
+ 	</update>
+ 	<!-- 绑定用户代理 -->
+ 	<insert id="insertDaiLUser" parameterType="map">
+ 		INSERT INTO zc_dail_user(
+			dail_id,user_id,time,white
+		)
+		VALUES(
+			#{dail_id},#{user_id},#{time},#{white}
+		)
+ 	</insert>
+</mapper>

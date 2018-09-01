@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.ZongDaiLUserDao">
+	<!-- 充值总条数 含扣量 -->
+	<select id="findAllBuyCountKou" resultType="java.lang.Integer">
+		SELECT COUNT(id) FORM zc_recharge  
+	</select>
+	<!-- 分页查询直充明细 含扣量-->
+	<select id="findRechargeByPagesKou" parameterType="map" resultType="com.club.entity.Recharge">
+		SELECT * FROM zc_recharge ORDER BY time DESC LIMIT #{start},#{size}
+	</select>
+	<!-- 扣量数 -->
+	<select id="findKouCount" resultType="java.lang.Integer">
+		SELECT count(id) FROM zc_recharge where ifkou = 1 
+	</select>
+	<!-- 扣量总额 -->
+	<select id="findKouAll" resultType="java.lang.Integer">
+		SELECT SUM(money) FROM zc_recharge WHERE ifkou = 1
+	</select>
+	<!-- 总订单数 -->
+	<select id="findOrderCount" resultType="java.lang.Integer">
+		SELECT count(id) FROM zc_recharge 
+	</select>
+	<!-- 总金额 -->
+	<select id="findOrderNum" resultType="java.lang.Integer">
+		SELECT SUM(money) FROM zc_recharge
+	</select>
+	<!-- 修改扣量状态 -->
+	<update id="changeKouState" parameterType="java.lang.String">
+		UPDATE zc_recharge SET ifkou = 1 WHERE ifcash = 0 and orderNum = #{orderNum}
+	</update>
+	<!-- 修改扣量 -->
+	<update id="changeKou" parameterType="java.lang.Integer">
+		UPDATE zc_kou_info SET kou = #{kou} where id = 1
+	</update>
+	<!-- 查看扣量 -->
+	<select id="findKou" resultType="java.lang.Integer">
+		SELECT kou from zc_kou_info WHERE id = 1
+	</select>
+	<!-- 白名单列表 -->
+	<select id="whiteList" parameterType="map" resultType="java.lang.Integer">
+		SELECT user_id from zc_dail_user WHERE white = 1 ORDER BY time DESC LIMIT #{start},#{size}
+	</select>
+	<!-- 总人数 -->
+	<select id="allWhiteCount"  resultType="java.lang.Integer">
+		SELECT COUNT(id) from zc_dail_user WHERE white = 1
+	</select>
+	<!-- 根据userId查找白名单 -->
+	<select id="findWhiteById" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT white FROM zc_dail_user WHERE user_id = #{userId}
+	</select>
+	<!-- 修改白名单 -->
+	<update id="changeWhite">
+		UPDATE zc_dail_user SET white = #{white} where user_id = #{userId}
+	</update>
+	
+	<!-- 插入订单详情 -->
+	<insert id="saveRecharge" parameterType="map">
+		INSERT INTO zc_recharge(
+			dail_id,user_id,time,money,card,orderNum,ifkou,ifcash
+		)
+		VALUES(
+			#{dail_id},#{user_id},#{time},#{money},#{card},#{orderNum},#{ifkou},#{ifcash}
+		)
+	</insert>
+	<!-- 今日订单数 -->
+	<select id="todayAllCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(id) FROM zc_recharge where time&gt;=#{morning} and time&lt;#{night}
+	</select>
+	<!-- 今日扣量数 -->
+	<select id="todayAllKouCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(id) FROM zc_recharge where time&gt;=#{morning} and time&lt;#{night} and ifkou = 1
+	</select>
+	<!-- 今日订单总额 -->
+	<select id="todayAll" resultType="java.lang.Integer" parameterType="map">
+		SELECT SUM(money) FROM zc_recharge where time&gt;=#{morning} and time&lt;#{night} 
+	</select>
+	<!-- 今日扣量总额 -->
+	<select id="todayAllKou" resultType="java.lang.Integer" parameterType="map">
+		SELECT SUM(money) FROM zc_recharge where time&gt;=#{morning} and time&lt;#{night} and ifkou = 1
+	</select>
+</mapper>

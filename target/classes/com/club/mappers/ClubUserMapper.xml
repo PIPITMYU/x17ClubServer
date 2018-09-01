@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.ClubUserDao">
+	
+	
+	<!--查选俱乐部人数,不含正申请加入的 -->
+	<select id="findAllUser" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select USER_ID from CLUB_USER
+		where CLUB_ID = #{clubId} and STATUS <![CDATA[ != ]]> 0
+	</select>
+	
+	<!--查选申请加入的俱乐部人数 -->
+	<select id="findWantInNum" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(386)  from CLUB_USER
+		where CLUB_ID = #{clubId} and STATUS = 0
+	</select>
+	
+	<!--查选申请离开的俱乐部人数 -->
+	<select id="findWantOutNum" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(386)  from CLUB_USER
+		where CLUB_ID = #{clubId} and STATUS = 2
+	</select>
+	
+	
+	<!-- 查询 申请加入列表-->
+	<select id="findJoinUser" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select USER_ID from CLUB_USER
+		where CLUB_ID = #{clubId} and STATUS = 0
+	</select>
+	<!-- 查询申请退出列表 -->
+	<select id="findLeaveUser" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select USER_ID from CLUB_USER
+		where CLUB_ID = #{clubId} and STATUS = 2
+	</select>
+	<!-- 通过加入俱乐部申请 -->
+	<update id="passJoin">
+		update CLUB_USER set STATUS = 1 where CLUB_ID = #{clubId} and USER_ID = #{userId}
+	</update>
+	<!-- 查寻创建的俱乐部数量-->
+	<select id="findClubNumByUserId"  resultType="java.lang.Integer">
+	  SELECT count(ID) from CLUB_USER where USER_ID = #{userId} and STATUS = 5
+	 </select>
+	 <!-- 查寻其加入的俱乐部数量-->
+	<select id="findClubNumByAddUserId"  resultType="java.lang.Integer">
+	  SELECT count(ID) from CLUB_USER where USER_ID = #{userId} and (STATUS = 1 or  STATUS = 2) 
+	 </select>
+	 
+	<!-- 拒绝退出俱乐部申请 -->
+	<update id="refuseLeave">
+		update CLUB_USER set STATUS = 1 where CLUB_ID = #{clubId} and USER_ID = #{userId}
+	</update>
+	<!-- 拒绝加入俱乐部申请 -->
+	<delete id="refuseJoin">
+		delete from CLUB_USER where CLUB_ID = #{clubId} and USER_ID = #{userId}
+	</delete>
+	<!-- 通过退出俱乐部申请 -->
+	<delete id="passLeave">
+		delete from CLUB_USER where CLUB_ID = #{clubId} and USER_ID = #{userId}
+	</delete>
+	<!-- 踢出俱乐部 -->
+	<delete id="deleteUser">
+		delete from CLUB_USER where CLUB_ID = #{clubId} and USER_ID = #{userId}
+	</delete>
+</mapper>

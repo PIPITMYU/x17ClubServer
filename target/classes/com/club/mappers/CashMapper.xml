@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.CashDao">
+	<!-- 申请提现 -->
+	<insert id="insertCash" parameterType="map">
+		INSERT INTO zc_cash(
+			dail_id,money,time,state,cashCode
+		)
+		VALUES(
+			#{dail_id},#{money},#{time},#{state},#{cashCode}
+		)
+	</insert>
+	<update id="changeIfCashState" parameterType="map">
+		UPDATE zc_recharge SET ifcash = 1,cashCode = #{cashCode} WHERE ifcash = 0 
+		and ifkou = 0 and time&lt;#{time} and dail_id = #{dail_id}
+	</update>
+	<!-- 同意提现 -->
+	<update id="agreeCash" parameterType="map">
+		UPDATE zc_cash SET state = 1 WHERE dail_id = #{dail_id} AND cashCode = #{cashCode}
+	</update>
+	<!-- 已提现列表-->
+	<select id="findHaveCash" resultType="com.club.entity.Cash" parameterType="map">
+		SELECT * FROM zc_cash where state = 1 ORDER BY time DESC LIMIT #{start},#{size}
+	</select>
+	<!-- 今日提现次数 -->
+	<select id="todayCashCount" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(id) from zc_cash WHERE time&gt;=#{time} and dail_id = #{dail_id}
+	</select>
+	<!-- 最低提现额度 -->
+	<select id="minCash" resultType="java.lang.Integer">
+		SELECT minCash from zc_kou_info where id = 1
+	</select>
+	<!-- 已总提现数 -->
+	<select id="haveCashCount" resultType="java.lang.Integer">
+		SELECT count(id) from zc_cash where state = 1
+ 	</select>
+ 	<!-- 未总提现数 -->
+	<select id="noCashCount" resultType="java.lang.Integer">
+		SELECT count(id) from zc_cash where state = 0
+ 	</select>
+ 	<!-- 未提现列表-->
+	<select id="findNoCash" resultType="com.club.entity.Cash" parameterType="map">
+		SELECT * FROM zc_cash where state = 0 ORDER BY time DESC LIMIT #{start},#{size}
+	</select>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.club.dao.ClubInfoDao">
+	<!--   <resultMap id="BaseResultMap" type="com.club.entity.RedisClub" >
+	  <id column="ID" property="id" jdbcType="INTEGER" />
+	  <result column="CLUB_ID" property="clubId" jdbcType="INTEGER" />
+	  <result column="CLUB_NAME" property="clubName" jdbcType="VARCHAR" />
+	  <result column="CREATE_ID" property="createId" jdbcType="INTEGER" />
+	  <result column="ROOM_CARD_NUM" property="roomCardNum" jdbcType="INTEGER" />
+	  <result column="PERSON_QUOTA" property="personQuota" jdbcType="INTEGER" />
+	  <result column="ROOM_CARD_QUOTA" property="roomCardQuota" jdbcType="INTEGER" />
+	  <result column="ROOM_CARD_NOTICE" property="roomCardNotice" jdbcType="INTEGER" />
+	  <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+	  <result column="FREE_START" property="freeStart" jdbcType="BIGINT" />
+	  <result column="FREE_END" property="freeEnd" jdbcType="BIGINT" />
+	  不属于表字段的
+	  <result column="USER_NAME" property="createName" jdbcType="VARCHAR" />
+	  
+	</resultMap> -->
+	
+	<!--根据主键查询一条用户数据 -->
+	<select id="findClubByCreateId" resultType="com.club.entity.ClubInfo" parameterType="java.lang.Integer">
+		select * from CLUB_INFO
+		where CREATE_ID = #{userId} 
+	</select>
+	
+	<!--创建俱乐部 -->
+	<insert id="createClub" parameterType="com.club.entity.ClubInfo">
+		insert into CLUB_INFO ( CLUB_ID, CLUB_NAME ,CREATE_ID, ROOM_CARD_NUM, 
+		PERSON_QUOTA,ROOM_CARD_QUOTA, ROOM_CARD_NOTICE,CREATE_TIME,CLUB_USERNAME
+		)
+		values (#{CLUB_ID,jdbcType=INTEGER}, #{CLUB_NAME,jdbcType=VARCHAR},
+		#{CREATE_ID,jdbcType=INTEGER}, #{ROOM_CARD_NUM,jdbcType=INTEGER},
+		 #{PERSON_QUOTA,jdbcType=INTEGER}, 
+		#{ROOM_CARD_QUOTA,jdbcType=INTEGER},#{ROOM_CARD_NOTICE,jdbcType=INTEGER},
+		 #{CREATE_TIME,jdbcType=INTEGER},#{CLUB_USERNAME,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 把创始人加入俱乐部中 -->
+	<insert id="addCreater" parameterType="map">
+		insert into CLUB_USER (CLUB_ID,USER_ID,STATUS,CREATE_TIME) values(#{clubId},#{userId},5,#{createTime})
+	</insert>
+	<!-- 修改库存 -->
+	<update id="addMoney">
+		update CLUB_INFO set ROOM_CARD_NUM = ROOM_CARD_NUM + #{change} where CLUB_ID = #{clubId}
+	</update>
+		<!-- 修改限免时间 -->
+	<update id="updateFreeTimeByClubId">
+		update CLUB_INFO set FREE_START = #{freeStart}, FREE_END = #{freeEnd} where CLUB_ID = #{clubId}
+	</update>
+	<!-- 关闭限免时间 -->
+	<update id="closeFreeTimeByClubId">
+		update CLUB_INFO set FREE_END=#{freeEnd} where CLUB_ID = #{clubId}
+	</update>
+	 <!-- 查询俱乐部信息 -->
+	<select id="findClubByClubId" parameterType="java.lang.Integer" resultType="com.club.entity.ClubInfo">
+		select * from CLUB_INFO where CLUB_ID = #{clubId}
+	</select>
+	<!-- 查询俱乐部信息 -->
+	<select id="findClubNewByClubId" parameterType="java.lang.Integer" resultType="com.club.entity.RedisClub">
+		select CLUB_ID as clubId, CLUB_NAME as clubName, CREATE_ID as createId,CLUB_USERNAME as clubUserName,
+		ROOM_CARD_NUM as roomCardNum,PERSON_QUOTA as personQuota ,ROOM_CARD_QUOTA as roomCardQuota,
+		ROOM_CARD_NOTICE as roomCardNotice ,CREATE_TIME as createTime,FREE_START as freeStart,FREE_END as freeEnd 
+		from CLUB_INFO where CLUB_ID = #{clubId}
+	</select>
+	<!-- 解散俱乐部 -->
+	<delete id="deleteClubInfo" parameterType="java.lang.Integer">
+		delete from CLUB_INFO where CLUB_ID = #{clubId}
+	</delete>
+	<delete id="deleteClubUser" parameterType="java.lang.Integer">
+		delete from CLUB_USER where CLUB_ID = #{clubId}
+	</delete>
+	<select id="findClubByClubName" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select CLUB_ID from CLUB_INFO where CLUB_NAME = #{name,jdbcType=VARCHAR}
+	</select>
+	<!-- 查询是否有操作 -->
+	<select id="haveAction" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT count(USER_ID) FROM `CLUB_USER` WHERE CLUB_ID=#{clubId} AND (`STATUS`=0 or `STATUS`=2) 
+	</select>
+</mapper>
